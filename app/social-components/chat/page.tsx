@@ -163,7 +163,6 @@ export default function ChatPage() {
         <Paper sx={{ width: 300, display: 'flex', flexDirection: 'column', p: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
             <Typography variant="h6">Users</Typography>
-            {/* Icon only (no dialog, no function) */}
             <IconButton size="small" color="primary">
               <PersonAddIcon />
             </IconButton>

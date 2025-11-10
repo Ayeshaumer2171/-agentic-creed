@@ -89,18 +89,15 @@ io.on('connection', (socket) => {
     const { to, from, message } = messageData;
     const fromUser = connectedUsers.get(socket.id);
     
-    // Use from parameter if provided, otherwise use fromUser
     const senderId = from || (fromUser ? fromUser.userId : null);
     const senderName = fromUser ? fromUser.userName : 'Unknown User';
     
     if (!senderId) {
-      console.error('Message send failed: No sender ID');
       socket.emit('error', { message: 'User not authenticated' });
       return;
     }
 
     if (!to || !message) {
-      console.error('Message send failed: Missing to or message');
       socket.emit('error', { message: 'Missing recipient or message' });
       return;
     }
@@ -108,23 +105,12 @@ io.on('connection', (socket) => {
     const timestamp = new Date().toISOString();
     const conversationKey = getConversationKey(senderId, to);
     
-    // Store message
-    if (!messages.has(conversationKey)) {
-      messages.set(conversationKey, []);
-    }
+    if (!messages.has(conversationKey)) messages.set(conversationKey, []);
     
-    const messageObj = {
-      from: senderId,
-      to,
-      message,
-      timestamp,
-      userName: senderName
-    };
-    
+    const messageObj = { from: senderId, to, message, timestamp, userName: senderName };
     messages.get(conversationKey).push(messageObj);
-    console.log(`Message stored: ${senderId} -> ${to}: ${message.substring(0, 50)}`);
 
-    // Find recipient socket
+    // Send to recipient if online
     let recipientSocket = null;
     for (const [socketId, user] of connectedUsers.entries()) {
       if (user.userId === to) {
@@ -132,43 +118,10 @@ io.on('connection', (socket) => {
         break;
       }
     }
+    if (recipientSocket) io.to(recipientSocket).emit('message:receive', messageObj);
 
-    // Send to recipient if online
-    if (recipientSocket) {
-      io.to(recipientSocket).emit('message:receive', messageObj);
-      console.log(`Message sent to recipient: ${to}`);
-    } else {
-      console.log(`Recipient ${to} is not online, message stored for later`);
-    }
-
-    // Always send confirmation to sender so they can see their message
+    // Always send confirmation to sender
     socket.emit('message:sent', messageObj);
-    console.log(`Message confirmation sent to sender: ${senderId}`);
-  });
-
-  // Add new user manually
-  socket.on('user:add', (userData) => {
-    const { name, email } = userData;
-    const newUserId = `user_${Date.now()}`;
-    
-    // Add to demo users (or create a separate list for added users)
-    demoUsers.push({
-      id: newUserId,
-      name: name || 'New User',
-      email: email || `${newUserId}@example.com`
-    });
-
-    const allUsers = [
-      ...demoUsers,
-      ...Array.from(connectedUsers.values()).map(user => ({
-        id: user.userId,
-        name: user.userName,
-        email: user.email || `${user.userName}@example.com`,
-        online: true
-      }))
-    ];
-    
-    io.emit('users:updated', allUsers);
   });
 
   // Get conversation history
@@ -185,8 +138,7 @@ io.on('connection', (socket) => {
     if (user) {
       console.log(`User ${user.userName} (${user.userId}) disconnected`);
       connectedUsers.delete(socket.id);
-      
-      // Notify all users
+
       const allUsers = [
         ...demoUsers,
         ...Array.from(connectedUsers.values()).map(user => ({
@@ -196,7 +148,6 @@ io.on('connection', (socket) => {
           online: true
         }))
       ];
-      
       io.emit('users:updated', allUsers);
     }
   });
@@ -206,4 +157,3 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Socket.io server running on port ${PORT}`);
 });
-
