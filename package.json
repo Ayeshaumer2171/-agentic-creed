@@ -1,0 +1,48 @@
+{
+  "name": "agentic-creed",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "server": "node server.js",
+    "dev:all": "concurrently \"npm run server\" \"npm run dev\""
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "@mui/x-charts": "^8.17.0",
+    "@mui/x-data-grid": "^8.17.0",
+    "@reduxjs/toolkit": "^2.10.1",
+    "@toolpad/core": "^0.16.0",
+    "axios": "^1.13.2",
+    "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "next": "16.0.1",
+    "react": "19.2.0",
+    "react-bootstrap": "^2.10.10",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "19.2.0",
+    "react-redux": "^9.2.0",
+    "recharts": "^3.3.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
